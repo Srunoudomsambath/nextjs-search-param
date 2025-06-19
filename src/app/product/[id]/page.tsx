@@ -1,77 +1,71 @@
-import { products } from '@/app/data/product';
 import Image from 'next/image';
-import React from 'react'
+import React from 'react';
 
 type Params = {
-    params: {
-        id: string;
-    }
-}
+  params: {
+    id: string;
+  };
+};
 
-export default function page({ params }: Params) {
+export default async function page({ params }: Params) {
+  const productId = parseInt(params.id);
+  const res = await fetch(`https://fakestoreapi.com/products/${productId}`, { cache: 'no-store' });
 
-    const productId = parseInt(params.id)
-    console.log(`Product ID: ${productId}`);
+  if (!res.ok) {
+    return <div className="text-center text-red-500 mt-10">Product not found</div>;
+  }
 
-    const product = products.find((p) => p.id === productId)
+  const product = await res.json();
 
-    if (!product) {
-        return <div className="text-center text-red-500">Product not found</div>;
-    }
-    return (
-        <div className="w-[90%] mx-auto my-10">
-            <div className="flex bg-white rounded-lg shadow dark:bg-gray-800 flex-col md:flex-row">
-                <div className="relative w-full md:w-[50%] flex justify-center items-center">
-                    <Image src={product.imageUrl} alt={product.name} width={300} height={300}
-                    unoptimized
-                        className="object-cover w-full h-48 md:h-full rounded-t-lg md:rounded-l-lg md:rounded-t-none" />
-                </div>
-                <form className="flex-auto p-6">
-                    <div className="flex flex-wrap">
-                        <h1 className="flex-auto text-xl font-semibold dark:text-gray-50">{product.name}</h1>
-                        <div className="text-xl font-semibold text-gray-500 dark:text-gray-300">${product.price}</div>
-                        <div className="flex-none w-full mt-2 text-sm font-medium text-gray-500 dark:text-gray-300">In stock</div>
-                    </div>
-                    <div className="flex items-baseline mt-4 mb-6 text-gray-700 dark:text-gray-300">
-                        <div className="flex space-x-2">
-
-                            <label className="text-center">
-
-                                <input type="radio"
-                                    className="flex items-center justify-center w-6 h-6 accent-violet-600 bg-gray-100 rounded-lg dark:bg-gray-600"
-                                    name="size" value="xs" />XS
-                            </label>
-                            <label className="text-center">
-                                <input type="radio" className="flex items-center justify-center w-6 h-6 accent-violet-600" name="size"
-                                    value="s" />S
-                            </label>
-                            <label className="text-center">
-                                <input type="radio" className="flex items-center justify-center w-6 h-6 accent-violet-600" name="size"
-                                    value="m" />M
-                            </label>
-                            <label className="text-center">
-                                <input type="radio" className="flex items-center justify-center w-6 h-6 accent-violet-600" name="size"
-                                    value="l" />L
-                            </label>
-                            <label className="text-center">
-                                <input type="radio" className="flex items-center justify-center w-6 h-6 accent-violet-600" name="size"
-                                    value="xl" />XL
-                            </label>
-                        </div>
-                        <a href="#"
-                            className="hidden ml-auto text-sm text-gray-500 underline md:block dark:text-gray-300">Size
-                            Guide
-                        </a>
-                    </div>
-                    <div className="flex mb-4 text-sm font-medium">
-                        <button type="button"
-                            className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg ">Buy
-                            now</button>
-                    </div>
-                    <p className="text-sm text-gray-500 dark:text-gray-300">{product.description}</p>
-                    <p className="text-lg dark:text-gray-300 bg-blue-300 p-2 rounded-lg mt-5 text-white">Category : {product.category}</p>
-                </form>
-            </div>
+  return (
+    <main className="w-full min-h-screen bg-gray-50 py-10 px-4">
+      <section className="max-w-5xl mx-auto bg-white rounded-xl shadow-md overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-6 p-8">
+        {/* Image */}
+        <div className="flex items-center justify-center">
+          <div className="w-full h-[300px] relative">
+            <Image
+              src={product.image}
+              alt={product.title}
+              fill
+              unoptimized
+              className="object-contain rounded-lg"
+            />
+          </div>
         </div>
-    )
+
+        {/* Details */}
+        <div className="flex flex-col justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">{product.title}</h1>
+            <p className="text-gray-600 text-sm mb-4">{product.description}</p>
+            <p className="text-md font-medium text-white bg-blue-500 w-fit px-3 py-1 rounded-full mb-4">
+              {product.category}
+            </p>
+          </div>
+
+          <div className="mt-auto">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-3xl font-bold text-red-500">${product.price}</span>
+              <span className="text-sm text-green-600">✅ In Stock</span>
+            </div>
+
+            <div className="flex flex-wrap gap-2 mb-6">
+              {['XS', 'S', 'M', 'L', 'XL'].map((size) => (
+                <button
+                  key={size}
+                  className="px-3 py-1 rounded-md border border-gray-300 hover:border-blue-500 text-sm font-medium text-gray-700 hover:text-blue-500 transition"
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+
+            <button className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition duration-300">
+              Buy Now
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
 }

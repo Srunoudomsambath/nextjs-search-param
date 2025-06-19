@@ -1,8 +1,8 @@
-export type ProductType = {
+export type newType = {
     id: number;
-    name: string;
+    title : string;
     description: string;
     price: number;
-    imageUrl: string;
+    image: string;
     category: string;
 }

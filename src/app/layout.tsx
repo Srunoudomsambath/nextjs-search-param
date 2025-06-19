@@ -4,6 +4,8 @@ import "./globals.css";
 import NavbarComponent from "@/components/header/NavbarComponent";
 import { Suspense } from "react";
 import Loading from "./loading";
+import Error from "./error";
+import { ErrorBoundary } from "next/dist/client/components/error-boundary";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,10 +32,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <NavbarComponent />
-        <Suspense fallback={<Loading />}>
-          {children}
-        </Suspense>
+        
+        <ErrorBoundary errorComponent={Error}>
+          <NavbarComponent />
+          <Suspense fallback={<Loading />}>
+            {children}
+          </Suspense>
+        </ErrorBoundary>
+        
       </body>
     </html>
   );
