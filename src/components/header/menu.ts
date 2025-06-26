@@ -28,6 +28,11 @@ export const navLink : NavBar[]= [
         name : 'Blog',
         active:false,
     },
+    {
+        path : '/user',
+        name : 'User',
+        active : false
+    }
 
     
 ]

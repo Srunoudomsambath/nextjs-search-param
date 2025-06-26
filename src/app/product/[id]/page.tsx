@@ -16,7 +16,7 @@ export default async function page({ params }: Params) {
   }
 
   const product = await res.json();
-  //hello
+
   return (
     <main className="w-full min-h-screen bg-gray-50 py-10 px-4">
       <section className="max-w-5xl mx-auto bg-white rounded-xl shadow-md overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-6 p-8">
