@@ -1,13 +1,17 @@
+import UserDetailPage from "./UserDetailPage";
+import { Metadata } from "next";
+interface GenerateMetadataProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
 
-import { Metadata } from 'next';
-import UserDetailPage from './UserDetailPage';
-  // TODO meta data are base on server side
-  // ✅ Dynamic metadata function
-export async function generateMetadata(
-  { params }: { params: { id: string } }
-): Promise<Metadata> {
+export async function generateMetadata({ params }: GenerateMetadataProps): Promise<Metadata> {
   try {
-    const res = await fetch(`https://dummyjson.com/users/${params.id}`, {
+    // Await the params Promise
+    const { id } = await params;
+    
+    const res = await fetch(`https://dummyjson.com/users/${id}`, {
       cache: 'no-store',
     });
 
@@ -22,7 +26,7 @@ export async function generateMetadata(
       description: `Details of ${user.firstName} ${user.lastName}, user from ${user.university}`,
     };
   } catch (error) {
-     console.error('Metadata fetch error:', error); // 👈 Now it's used
+    console.error('Metadata fetch error:', error);
     return {
       title: 'User Not Found',
       description: 'This user does not exist or an error occurred.',
@@ -30,8 +34,6 @@ export async function generateMetadata(
   }
 }
 
-export default function page(){
-  return (
-    <UserDetailPage/>
-  )
+export default function page() {
+  return <UserDetailPage/>;
 }

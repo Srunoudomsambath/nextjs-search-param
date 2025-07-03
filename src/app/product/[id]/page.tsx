@@ -2,13 +2,16 @@ import Image from 'next/image';
 import React from 'react';
 
 type Params = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 export default async function page({ params }: Params) {
-  const productId = parseInt(params.id);
+  // Await the params Promise
+  const { id } = await params;
+  const productId = parseInt(id);
+  
   const res = await fetch(`https://fakestoreapi.com/products/${productId}`, { cache: 'no-store' });
 
   if (!res.ok) {
