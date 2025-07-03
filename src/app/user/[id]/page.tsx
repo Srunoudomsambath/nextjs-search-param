@@ -8,9 +8,8 @@ interface GenerateMetadataProps {
 
 export async function generateMetadata({ params }: GenerateMetadataProps): Promise<Metadata> {
   try {
-    // Await the params Promise
     const { id } = await params;
-    
+
     const res = await fetch(`https://dummyjson.com/users/${id}`, {
       cache: 'no-store',
     });
@@ -24,6 +23,20 @@ export async function generateMetadata({ params }: GenerateMetadataProps): Promi
     return {
       title: `${user.firstName} ${user.lastName} - Profile`,
       description: `Details of ${user.firstName} ${user.lastName}, user from ${user.university}`,
+      openGraph: {
+        images: [
+          {
+            url: user.image, // assuming your user JSON has an `image` field
+            width: 800,
+            height: 600,
+            alt: `${user.firstName} ${user.lastName}`,
+          },
+        ],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        images: [user.image],
+      },
     };
   } catch (error) {
     console.error('Metadata fetch error:', error);
@@ -33,6 +46,7 @@ export async function generateMetadata({ params }: GenerateMetadataProps): Promi
     };
   }
 }
+
 
 export default function page() {
   return <UserDetailPage/>;
