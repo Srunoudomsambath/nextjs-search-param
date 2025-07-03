@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { UserType } from '@/types/userType';
+import CardUser from '@/components/card-user/CardUser';
+import LoadingSpinner from '@/components/loading/LoadingSpinner';
 
 export default function UsersPage() {
   const [userlist, setUserlist] = useState<UserType[]>([]);
@@ -13,15 +14,12 @@ export default function UsersPage() {
 
   const searchParams = useSearchParams();
   const router = useRouter();
-
   const search = searchParams.get('search')?.toLowerCase() || '';
 
-  // Sync input state with URL param
   useEffect(() => {
     setQuery(search);
   }, [search]);
 
-  // Fetch users once
   useEffect(() => {
     fetch('https://dummyjson.com/users')
       .then((res) => {
@@ -36,7 +34,6 @@ export default function UsersPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Update query & URL on every input change (live search)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setQuery(val);
@@ -49,14 +46,13 @@ export default function UsersPage() {
     }
   };
 
-  // Filter users according to current search param
   const filteredUsers = search
     ? userlist.filter((user: UserType) =>
         user.firstName.toLowerCase().includes(search)
       )
     : userlist;
 
-  if (loading) return <p className="p-4 text-blue-500">Loading users...</p>;
+  if (loading) return <LoadingSpinner/>;
   if (error) return <p className="p-4 text-red-500">{error}</p>;
 
   return (
@@ -74,25 +70,7 @@ export default function UsersPage() {
           <p className="col-span-full text-center text-gray-500">No users found.</p>
         )}
         {filteredUsers.map((user) => (
-          <Link key={user.id} href={`/user/${user.id}`}>
-            <div className="cursor-pointer bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-4 border border-gray-100">
-              <img
-                src={user.image}
-                alt={`${user.firstName} ${user.lastName}`}
-                className="w-24 h-24 rounded-full mx-auto"
-              />
-              <h2 className="text-xl font-bold text-center mt-2 text-accent-color">
-                {user.firstName} {user.lastName}
-              </h2>
-              <p className="text-center text-sm text-gray-600">{user.email}</p>
-              <div className="mt-4 space-y-1 text-sm text-gray-700">
-                <p><strong>Phone:</strong> {user.phone}</p>
-                <p><strong>Gender:</strong> {user.gender}</p>
-                <p><strong>Age:</strong> {user.age}</p>
-                <p><strong>University:</strong> {user.university}</p>
-              </div>
-            </div>
-          </Link>
+          <CardUser key={user.id} user={user} />
         ))}
       </div>
     </div>

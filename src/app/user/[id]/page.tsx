@@ -1,42 +1,37 @@
-import { UserType } from "@/types/userType";
-import Link from "next/link";
-type Params = {
-  params: {
-    id: string;
-  };
-};
 
-export default async function UserDetailPage({ params }: Params) {
-  const userId = params.id;
- const res = await fetch(`https://dummyjson.com/users/${userId}`, { cache: 'no-store' });
+import { Metadata } from 'next';
+import UserDetailPage from './UserDetailPage';
+  // TODO meta data are base on server side
+  // ✅ Dynamic metadata function
+export async function generateMetadata(
+  { params }: { params: { id: string } }
+): Promise<Metadata> {
+  try {
+    const res = await fetch(`https://dummyjson.com/users/${params.id}`, {
+      cache: 'no-store',
+    });
 
+    if (!res.ok) {
+      throw new Error('User not found');
+    }
 
-  if (!res.ok) {
-    return <p className="text-red-500">Failed to fetch user data.</p>;
+    const user = await res.json();
+
+    return {
+      title: `${user.firstName} ${user.lastName} - Profile`,
+      description: `Details of ${user.firstName} ${user.lastName}, user from ${user.university}`,
+    };
+  } catch (error) {
+     console.error('Metadata fetch error:', error); // 👈 Now it's used
+    return {
+      title: 'User Not Found',
+      description: 'This user does not exist or an error occurred.',
+    };
   }
+}
 
-  const user: UserType = await res.json();
-
+export default function page(){
   return (
-    <div className="max-w-md mx-auto bg-white p-6 shadow-lg rounded-2xl mt-10 border border-gray-200">
-      <img
-        src={user.image}
-        alt={`${user.firstName} ${user.lastName}`}
-        className="w-24 h-24 rounded-full mx-auto"
-      />
-      <h1 className="text-xl font-bold text-center mt-4">
-        {user.firstName} {user.lastName}
-      </h1>
-      <p className="text-center text-sm text-gray-500">{user.email}</p>
-      <div className="mt-4 space-y-2 text-sm text-gray-700">
-        <p><strong>Phone:</strong> {user.phone}</p>
-        <p><strong>Gender:</strong> {user.gender}</p>
-        <p><strong>Age:</strong> {user.age}</p>
-        <p><strong>University:</strong> {user.university}</p>
-      </div>
-      <Link href="/users">
-  <p className="mt-6 text-center text-blue-600 hover:underline">← Back to user list</p>
-</Link>
-    </div>
-  );
+    <UserDetailPage/>
+  )
 }
