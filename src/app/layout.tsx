@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import NavbarComponent from "@/components/header/NavbarComponent";
+// import NavbarComponent from "@/components/header/NavbarComponent";
 import { Suspense } from "react";
 import Loading from "./loading";
 import Error from "./error";
 import { ErrorBoundary } from "next/dist/client/components/error-boundary";
+import NavbarWrapper from "@/components/header/NavbarWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,7 +54,7 @@ export default function RootLayout({
       >
         
         <ErrorBoundary errorComponent={Error}>
-          <NavbarComponent />
+          <NavbarWrapper />
           <Suspense fallback={<Loading />}>
             {children}
           </Suspense>
